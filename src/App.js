@@ -25,8 +25,29 @@ function App() {
   //  Play Pause Audio
   const playPause = () => {
     setIsPlaying(!isPlaying)
-    playing === 'music-container' ? setplaying('music-container play') : setplaying('music-container')
+    playing === 'music-container' 
+    ? setplaying('music-container play') 
+    : setplaying('music-container')
   }
+
+  // Update Progress Bar
+  const updateProgress = () => {
+    const duration = audio.current.duration
+    const cT = audio.current.currentTime
+    const progress = cT / duration * 100
+    setCurrentSong({...currentSong, progress: `${progress}%`, length: duration})
+  }
+
+  // Click On Progress Bar
+  const clickRef = useRef();
+  const setProgress = (e) => {
+    let width = clickRef.current.clientWidth;
+    const offset = e.nativeEvent.offsetX;
+    const divProgress = (offset/width) * 100;
+    audio.current.currentTime = divProgress / 100 * currentSong.length
+  }
+
+
   return (
     <div className="App">
       <h1>Music Player</h1>
@@ -34,12 +55,12 @@ function App() {
       <div className={playing}>
         <div className="music-info">
           <h4 id="title">{currentSong.title}</h4>
-          <div className="progress-container" id="progress-container">
-            <div className="progress" id="progress"></div>
+          <div className="progress-container" onClick={setProgress} ref={clickRef}>
+            <div className="progress" style={{width: currentSong.progress}}></div>
           </div>
         </div>
 
-        <audio src={currentSong.audio} ref={audio}/>
+        <audio src={currentSong.audio} ref={audio} onTimeUpdate={updateProgress}/>
 
         <div className="img-container">
           <img src={currentSong.img} alt="music-cover"/>
