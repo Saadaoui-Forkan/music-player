@@ -1,13 +1,8 @@
 import { useRef, useState, useEffect } from 'react'
 import { songsdata } from './data/data';
+import PlayerBtns from './PlayerBtns';
 
 function App() {
-  // const handleSongPlaying = () => {
-  //   isPlaying === 'music-container' ? setIsPlaying('music-container play') : setIsPlaying('music-container')
-  //   playPauseBtn === "fas fa-play" ? setPlayPauseBtn("fas fa-pause") : setPlayPauseBtn("fas fa-play")
-  //   isPlaying === 'music-container' ? audio.current.play() : audio.current.pause()
-  // }
-  const [songs, setSongs] = useState(songsdata);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSong, setCurrentSong] = useState(songsdata[0]);
   const [playing, setplaying] = useState('music-container')
@@ -47,6 +42,26 @@ function App() {
     audio.current.currentTime = divProgress / 100 * currentSong.length
   }
 
+  // Next Song
+  const nextSong = () => {
+    const idx = songsdata.findIndex(song => song.id === currentSong.id)
+    if (idx === songsdata.length - 1) {
+      setCurrentSong(songsdata[0])
+    } else {
+      setCurrentSong(songsdata[idx+1])
+    }
+    audio.current.autoplay = true
+  }
+
+  // Previous Song
+  const prevSong = () => {
+    const idx = songsdata.findIndex(song => song.id === currentSong.id)
+    if (idx === 0) {
+      setCurrentSong(songsdata[songsdata.length - 1])
+    } else {
+      setCurrentSong(songsdata[idx-1])
+    }
+  }
 
   return (
     <div className="App">
@@ -65,19 +80,12 @@ function App() {
         <div className="img-container">
           <img src={currentSong.img} alt="music-cover"/>
         </div>
-        <div className="navigation">
-          <button id="prev" className="action-btn">
-            <i className="fas fa-backward"></i>
-          </button>
-          <button id="play" className="action-btn action-btn-big" onClick={playPause}>
-            {
-              isPlaying ? <i className="fas fa-pause"></i> : <i className="fas fa-play"></i>
-            }
-          </button>
-          <button id="next" className="action-btn">
-            <i className="fas fa-forward"></i>
-          </button>
-        </div>
+        <PlayerBtns 
+          isPlaying = {isPlaying}
+          prevSong = {prevSong}
+          nextSong = {nextSong}
+          playPause = {playPause}
+        />
       </div>
 
     </div>
